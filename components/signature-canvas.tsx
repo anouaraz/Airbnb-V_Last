@@ -9,7 +9,8 @@ interface SignatureCanvasProps {
 export default function SignatureCanvas({ onChange }: SignatureCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const isDrawing = useRef(false)
-  const [canvasWidth, setCanvasWidth] = useState<number | null>(null) // Initially null to avoid SSR mismatch
+  const [canvasWidth, setCanvasWidth] = useState<number | null>(null)
+  const [isFixed, setIsFixed] = useState(false)
 
   useEffect(() => {
     const updateWidth = () => {
@@ -33,6 +34,7 @@ export default function SignatureCanvas({ onChange }: SignatureCanvasProps) {
 
     const startDrawing = (e: MouseEvent | TouchEvent) => {
       isDrawing.current = true
+      setIsFixed(true)
       draw(e)
     }
 
@@ -40,6 +42,7 @@ export default function SignatureCanvas({ onChange }: SignatureCanvasProps) {
       isDrawing.current = false
       ctx.beginPath()
       onChange(canvas.toDataURL())
+      setIsFixed(false)
     }
 
     const draw = (e: MouseEvent | TouchEvent) => {
@@ -79,11 +82,14 @@ export default function SignatureCanvas({ onChange }: SignatureCanvasProps) {
   if (canvasWidth === null) return null // Avoid rendering until width is set
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={canvasWidth}
-      height={200}
-      className="border border-gray-300 rounded-md sm:w-[95%] md:w-[50%] sm:h-[25vh] md:h-[30vh]"
-    />
+    <div className={`${isFixed ? "fixed bottom-0 left-0 right-0 bg-violet-950 p-4 z-50" : ""} sm:static`}>
+      <canvas
+        ref={canvasRef}
+        width={canvasWidth}
+        height={200}
+        className="border border-gray-300 rounded-md sm:w-[95%] md:w-[50%] sm:h-[25vh] md:h-[30vh]"
+      />
+    </div>
   )
 }
+
