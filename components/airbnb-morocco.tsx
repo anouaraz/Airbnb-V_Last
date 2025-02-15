@@ -155,18 +155,18 @@ export function AirbnbMoroccoForm2() {
   
         if (screenWidth < 640) { // Small devices
           if (numGuests <= 2) {
-            setCardHeight("160vh");
+            setCardHeight("150vh");
           } else if (numGuests <= 4) {
             if (index < 2) {
-              setCardHeight("160vh");
+              setCardHeight("150vh");
             } else {
-              setCardHeight("170vh");
+              setCardHeight("160vh");
             }
           } else if (numGuests <= 6) {
             if (index < 2) {
-              setCardHeight("160vh");
+              setCardHeight("150vh");
             } else if (index < 4) {
-              setCardHeight("170vh");
+              setCardHeight("160vh");
             } else {
               setCardHeight("180vh");
             }
@@ -191,20 +191,20 @@ export function AirbnbMoroccoForm2() {
           }
         } else { // Large devices (laptops and above)
           if (numGuests <= 2) {
-            setCardHeight("130vh");
+            setCardHeight("165vh");
           } else if (numGuests <= 4) {
             if (index < 2) {
-              setCardHeight("130vh");
+              setCardHeight("165vh");
             } else {
-              setCardHeight("140vh");
+              setCardHeight("180vh");
             }
           } else if (numGuests <= 6) {
             if (index < 2) {
-              setCardHeight("130vh");
+              setCardHeight("165vh");
             } else if (index < 4) {
-              setCardHeight("140vh");
+              setCardHeight("180vh");
             } else {
-              setCardHeight("150vh");
+              setCardHeight("195vh");
             }
           }
         }
