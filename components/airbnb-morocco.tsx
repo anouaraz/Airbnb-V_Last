@@ -221,7 +221,7 @@ export function AirbnbMoroccoForm2() {
   return (
     <div className="min-h-screen p-4 sm:p-8 h-full">
       <Card className="max-w-6xl mx-auto bg-white/20 backdrop-blur-[14px] shadow-xl rounded-xl border border-white/20 overflow-hidden flex flex-col" style={{ height: cardHeight }}>
-        <CardContent className="p-4 sm:p-8 flex flex-col flex-grow">
+        <CardContent className="p-4 sm:p-8 flex flex-col flex-grow overflow-y-auto">
           <h1 className="text-lg sm:text-xl md:text-4xl font-bold mb-4 sm:mb-6 text-center text-white font-moroccan">
             Location d&apos;Appartement au Maroc
           </h1>
