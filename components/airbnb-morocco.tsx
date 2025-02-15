@@ -243,19 +243,19 @@ export function AirbnbMoroccoForm2() {
                             )}
                           </div>
                           {expandedGuests.includes(index) && (
-                            <Card className="absolute left-0 w-full mt-2 bg-white shadow-md rounded-lg overflow-hidden border border-gray-200 z-10">
+                            <Card className="absolute left-0 w-full mt-2 bg-violet-950 backdrop-blur-sm  shadow-md rounded-lg overflow-hidden z-10 border border-white/30 ">
                               <CardContent className="p-2 sm:p-4 space-y-4">
                                 <FormField
                                   control={form.control}
                                   name={`guests.${index}.fullName`}
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="text-gray-800">Nom complet</FormLabel>
+                                      <FormLabel className="text-white">Nom complet</FormLabel>
                                       <FormControl>
                                         <Input
                                           {...field}
                                           placeholder="Entrez votre nom complet"
-                                          className="bg-white/50 text-gray-800 border-gray-300 focus:ring-purple-400 w-full"
+                                          className="bg-white/50 text-gray-800 border-gray-300 focus:ring-purple-400 w-full placeholder:text-gray-300"
                                         />
                                       </FormControl>
                                       <FormMessage />
@@ -267,7 +267,7 @@ export function AirbnbMoroccoForm2() {
                                   name={`guests.${index}.sex`}
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="text-gray-800">Sexe</FormLabel>
+                                      <FormLabel className="text-white">Sexe</FormLabel>
                                       <FormControl>
                                         <RadioGroup
                                           onValueChange={field.onChange}
@@ -279,7 +279,7 @@ export function AirbnbMoroccoForm2() {
                                               <RadioGroupItem value="male" className="peer hidden" />
                                             </FormControl>
                                             <FormLabel
-                                              className={`flex items-center space-x-2 cursor-pointer text-gray-800 p-2 rounded-lg border ${
+                                              className={`flex items-center space-x-2 cursor-pointer text-white p-2 rounded-lg border ${
                                                 field.value === "male"
                                                   ? "bg-purple-600 border-purple-600 text-white" // Selected style
                                                   : "bg-white/50 border-gray-300" // Unselected style
@@ -294,7 +294,7 @@ export function AirbnbMoroccoForm2() {
                                               <RadioGroupItem value="female" className="peer hidden" />
                                             </FormControl>
                                             <FormLabel
-                                              className={`flex items-center space-x-2 cursor-pointer text-gray-800 p-2 rounded-lg border ${
+                                              className={`flex items-center space-x-2 cursor-pointer text-white p-2 rounded-lg border ${
                                                 field.value === "female"
                                                   ? "bg-purple-600 border-purple-600 text-white" // Selected style
                                                   : "bg-white/50 border-gray-300" // Unselected style
@@ -315,14 +315,14 @@ export function AirbnbMoroccoForm2() {
                                   name={`guests.${index}.nationality`}
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="text-gray-800">Nationalité</FormLabel>
+                                      <FormLabel className="text-white">Nationalité</FormLabel>
                                       <div className="relative">
                                         <FormControl>
                                           <div className="flex items-center">
                                             <Input
                                               type="text"
                                               placeholder="Rechercher une nationalité..."
-                                              className="bg-white/50 text-gray-800 border-gray-300 focus:ring-purple-400 w-full"
+                                              className="bg-white/50 text-white border-gray-300 focus:ring-purple-400 w-full placeholder:text-gray-300"
                                               value={field.value ? field.value : countrySearch}
                                               onChange={(e) => {
                                                 setCountrySearch(e.target.value)
@@ -380,7 +380,7 @@ export function AirbnbMoroccoForm2() {
                                   name={`guests.${index}.identificationType`}
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="text-gray-800">Type d'identification</FormLabel>
+                                      <FormLabel className="text-white">Type d'identification</FormLabel>
                                       <FormControl>
                                         <RadioGroup
                                           onValueChange={field.onChange}
@@ -392,7 +392,7 @@ export function AirbnbMoroccoForm2() {
                                               <RadioGroupItem value="CIN" className="peer hidden" />
                                             </FormControl>
                                             <FormLabel
-                                              className={`flex items-center space-x-2 cursor-pointer text-gray-800 p-2 rounded-lg border ${
+                                              className={`flex items-center space-x-2 cursor-pointer text-white p-2 rounded-lg border ${
                                                 field.value === "CIN"
                                                   ? "bg-purple-600 border-purple-600 text-white"
                                                   : "bg-white/50 border-gray-300"
@@ -407,7 +407,7 @@ export function AirbnbMoroccoForm2() {
                                               <RadioGroupItem value="Passport" className="peer hidden" />
                                             </FormControl>
                                             <FormLabel
-                                              className={`flex items-center space-x-2 cursor-pointer text-gray-800 p-2 rounded-lg border ${
+                                              className={`flex items-center space-x-2 cursor-pointer text-white p-2 rounded-lg border ${
                                                 field.value === "Passport"
                                                   ? "bg-purple-600 border-purple-600 text-white"
                                                   : "bg-white/50 border-gray-300"
@@ -428,7 +428,7 @@ export function AirbnbMoroccoForm2() {
                                     name={`guests.${index}.identificationFiles`}
                                     render={({ field }) => (
                                       <FormItem>
-                                        <FormLabel className="text-gray-800">
+                                        <FormLabel className="text-white">
                                           {form.getValues(`guests.${index}.identificationType`) === "CIN" ? "CIN (Recto/Verso)" : "Passeport"}
                                         </FormLabel>
                                         <FormControl>
@@ -437,7 +437,7 @@ export function AirbnbMoroccoForm2() {
                                             maxFiles={form.getValues(`guests.${index}.identificationType`) === "CIN" ? 2 : 1}
                                           />
                                         </FormControl>
-                                        <FormDescription className="text-gray-600">
+                                        <FormDescription className="text-white/70">
                                           {form.getValues(`guests.${index}.identificationType`) === "CIN"
                                             ? "Veuillez télécharger une copie recto et verso de votre CIN."
                                             : "Veuillez télécharger une copie de votre passeport."}
@@ -515,7 +515,7 @@ export function AirbnbMoroccoForm2() {
                 )}
               />
 
-                <div className={`p-6 flex flex-col transition-all duration-300 ${expandedGuests.length > 0 ? "mt-auto" : ""}`}>
+                <div className={`flex flex-col transition-all duration-300 ${expandedGuests.length > 0 ? "mt-auto" : ""}`}>
                     <FormField
                       control={form.control}
                       name="signature"
@@ -536,12 +536,14 @@ export function AirbnbMoroccoForm2() {
                         </FormItem>
                       )}
                     />
-                    <Button
-                      type="submit"
-                      className="w-full mt-4 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-purple-900 font-bold py-3 px-10 rounded-full shadow-lg transition"
-                    >
-                      Soumettre la Demande
-                    </Button>
+                    <div className="flex justify-center items-center">
+                      <Button
+                        type="submit"
+                        className="w-[40%] mt-4 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-purple-900 font-bold py-3 px-10 rounded-full shadow-lg transition"
+                      >
+                        Soumettre la Demande
+                      </Button>
+                    </div>
                   </div>
             </form>
           </Form>
