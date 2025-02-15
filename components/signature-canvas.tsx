@@ -36,19 +36,12 @@ export default function SignatureCanvas({ onChange }: SignatureCanvasProps) {
       isDrawing.current = true
       draw(e)
 
-      // Get the current scroll position
+      // Store current scroll position and fix the page
       const scrollY = window.scrollY
-
-      // Add fixed positioning and set top to maintain visual position
       document.body.style.position = "fixed"
       document.body.style.top = `-${scrollY}px`
-      document.body.style.width = "100%"
-      document.body.style.height = "100vh"
-
-      // Ensure the container is visible in the viewport
-      if (containerRef.current) {
-        containerRef.current.scrollIntoView({ behavior: "auto", block: "center" })
-      }
+      document.body.style.left = "0"
+      document.body.style.right = "0"
     }
 
     const stopDrawing = () => {
@@ -56,12 +49,12 @@ export default function SignatureCanvas({ onChange }: SignatureCanvasProps) {
       ctx.beginPath()
       onChange(canvas.toDataURL())
 
-      // Restore scrolling and position
+      // Restore scrolling
       const scrollY = document.body.style.top
       document.body.style.position = ""
       document.body.style.top = ""
-      document.body.style.width = ""
-      document.body.style.height = ""
+      document.body.style.left = ""
+      document.body.style.right = ""
       window.scrollTo(0, Number.parseInt(scrollY || "0") * -1)
     }
 
@@ -101,8 +94,8 @@ export default function SignatureCanvas({ onChange }: SignatureCanvasProps) {
       // Cleanup styles if component unmounts while drawing
       document.body.style.position = ""
       document.body.style.top = ""
-      document.body.style.width = ""
-      document.body.style.height = ""
+      document.body.style.left = ""
+      document.body.style.right = ""
     }
   }, [onChange, canvasWidth])
 
