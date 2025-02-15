@@ -1,16 +1,23 @@
+"use client"
+
 import type React from "react"
 import { useEffect, useRef } from "react"
 import Dropzone from "dropzone"
 import "dropzone/dist/dropzone.css"
 
-const DropzoneComponent: React.FC = () => {
+interface DropzoneComponentProps {
+  maxFiles?: number
+  onChange?: (files: File[]) => void
+}
+
+const DropzoneComponent: React.FC<DropzoneComponentProps> = ({ maxFiles = 5, onChange }) => {
   const dropzoneRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (dropzoneRef.current) {
       const dropzone = new Dropzone(dropzoneRef.current, {
         url: "/upload", // Change this to your upload endpoint
-        maxFiles: 5,
+        maxFiles: maxFiles,
         maxFilesize: 2, // Maximum file size in MB
         acceptedFiles: "image/*", // Accept only image files
         dictDefaultMessage: "Glissez et déposez les fichiers ici ou cliquez pour télécharger",
@@ -33,24 +40,32 @@ const DropzoneComponent: React.FC = () => {
 
       dropzone.on("success", (file) => {
         console.log("File uploaded successfully:", file)
+        if (onChange) {
+          onChange(dropzone.files)
+        }
       })
 
       dropzone.on("removedfile", (file) => {
         console.log("File removed:", file)
+        if (onChange) {
+          onChange(dropzone.files)
+        }
       })
 
       return () => {
         dropzone.destroy()
       }
     }
-  }, [])
+  }, [maxFiles, onChange])
 
   return (
     <div
       ref={dropzoneRef}
       className="dropzone border-2 border-dashed border-blue-300 p-8 rounded-lg text-center bg-gradient-to-br from-blue-100 to-purple-100 backdrop-blur-sm transition-all duration-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50"
     >
-      <div className="text-gray-600 font-medium text-sm md:text-lg">Glissez et déposez les fichiers ici ou cliquez pour télécharger</div>
+      <div className="text-gray-600 font-medium text-sm md:text-lg">
+        Glissez et déposez les fichiers ici ou cliquez pour télécharger
+      </div>
       <p className="text-sm text-gray-500 mt-2">Formats acceptés: JPG, PNG, GIF (max 5MB)</p>
     </div>
   )
