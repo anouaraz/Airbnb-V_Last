@@ -185,7 +185,7 @@ export function AirbnbMoroccoForm2() {
   }
 
   return (
-    <div className="fixed inset-0 bg-transparent flex items-center justify-center sm:my-8">
+    <div className="fixed inset-0 bg-transparent flex items-center justify-center sm:my-24 sm:mx-4">
       <Card className="w-full max-w-5xl bg-white/30 backdrop-blur-md shadow-xl rounded-xl border border-white/20 overflow-hidden flex flex-col justify-between flex-grow">
         <CardContent className="p-6 max-h-[95vh] overflow-y-auto">
           <h1 className="text-2xl md:text-4xl font-bold mb-6 text-center text-white font-moroccan">
