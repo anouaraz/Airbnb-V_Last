@@ -539,7 +539,7 @@ export function AirbnbMoroccoForm2() {
                     <div className="flex justify-center items-center">
                       <Button
                         type="submit"
-                        className="w-[40%] mt-4 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-purple-900 font-bold py-3 px-10 rounded-full shadow-lg transition"
+                        className="sm:w-[60%] w-[40%] mt-4 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-purple-900 font-bold py-3 px-10 rounded-full shadow-lg transition"
                       >
                         Soumettre la Demande
                       </Button>
