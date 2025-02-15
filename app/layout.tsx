@@ -25,18 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body
-        className={`${soraSans.variable} antialiased h-full bg-violet-950`}
-        style={{
-          backgroundImage: "url('/images/6349232.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
-          backgroundRepeat: "no-repeat",
-          height: "100vh", // Lock body height to the viewport height
-          overflowY: "scroll", // Enable vertical scrolling
-          scrollSnapType: "y mandatory", // Enable snapping on vertical scroll
-        }}
-      >
+        className={`${soraSans.variable} antialiased h-full bg-violet-950`}>
         {children}
       </body>
     </html>

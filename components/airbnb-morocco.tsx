@@ -155,18 +155,18 @@ export function AirbnbMoroccoForm2() {
   
         if (screenWidth < 640) { // Small devices
           if (numGuests <= 2) {
-            setCardHeight("150vh");
+            setCardHeight("160vh");
           } else if (numGuests <= 4) {
             if (index < 2) {
-              setCardHeight("150vh");
-            } else {
               setCardHeight("160vh");
+            } else {
+              setCardHeight("170vh");
             }
           } else if (numGuests <= 6) {
             if (index < 2) {
-              setCardHeight("150vh");
-            } else if (index < 4) {
               setCardHeight("160vh");
+            } else if (index < 4) {
+              setCardHeight("170vh");
             } else {
               setCardHeight("180vh");
             }
