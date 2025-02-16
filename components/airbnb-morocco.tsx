@@ -523,7 +523,9 @@ export function AirbnbMoroccoForm() {
                         Certificat de mariage
                       </FormLabel>
                       <FormControl>
+                        <div className="w-full md:w-[50%]">
                         <SimpleDropzone onChange={onChange} maxFiles={1} acceptMultiple={false} value={value || []} />
+                        </div>
                       </FormControl>
                       <FormDescription className="text-gray-300">
                         Comme il y a des invités masculins et féminins, dont une femme marocaine, veuillez télécharger

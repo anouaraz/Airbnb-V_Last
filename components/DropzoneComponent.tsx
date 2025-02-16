@@ -57,15 +57,15 @@ const SimpleDropzone: React.FC<SimpleDropzoneProps> = ({ onChange, maxFiles, acc
     <div
       {...getRootProps()}
       className={`border-2 border-dashed rounded-lg p-6 cursor-pointer transition-colors ${
-        isDragActive ? "border-purple-500 bg-purple-50" : "border-gray-300 hover:border-purple-400"
+        isDragActive ? "border-gray-300 hover:border-purple-400" : "border-gray-300 hover:border-purple-400"
       }`}
     >
       <input {...getInputProps()} />
       <div className="text-center mb-6">
         {isDragActive ? (
-          <p className="text-purple-500">Déposez les fichiers ici ...</p>
+          <p className="text-purple-500">Déposez vos images ici ...</p>
         ) : (
-          <p>Glissez et déposez des fichiers ici, ou cliquez pour sélectionner des fichiers</p>
+          <p className="text-white/60">Glissez et déposez vos images ici, ou cliquez pour sélectionner des images</p>
         )}
       </div>
       
