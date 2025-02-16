@@ -9,12 +9,13 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import DropzoneComponent from "./DropzoneComponent"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { ChevronDown, ChevronUp, User, User2, CreditCard, StampIcon as Passport } from "lucide-react"
 import TermsAndConditionsPopup from "./TermsAndConditionsPopup"
 import SignatureCanvas from "./signature-canvas"
+import SimpleDropzone from "./DropzoneComponent"
 
 interface Country {
   name: string
@@ -22,23 +23,42 @@ interface Country {
   flag: string
 }
 
-const guestSchema = z.object({
-  fullName: z.string().min(2, { message: "Le nom complet doit comporter au moins 2 caractères" }),
-  sex: z.enum(["male", "female"], { required_error: "Veuillez sélectionner un sexe" }),
-  nationality: z.string().min(1, { message: "Veuillez sélectionner une nationalité" }),
-  identificationType: z.enum(["CIN", "Passport"], { required_error: "Veuillez sélectionner un type d'identification" }),
-  identificationFiles: z.array(z.any()).refine(files => files.length > 0, { message: "L'identification est requise" }),
-})
+const guestSchema = z
+  .object({
+    fullName: z.string().min(2, { message: "Le nom complet doit comporter au moins 2 caractères" }),
+    sex: z.enum(["male", "female"], { required_error: "Veuillez sélectionner un sexe" }),
+    nationality: z.string().min(1, { message: "Veuillez sélectionner une nationalité" }),
+    identificationType: z.enum(["CIN", "Passport"], {
+      required_error: "Veuillez sélectionner un type d'identification",
+    }),
+    identificationFiles: z.array(z.instanceof(File)),
+  })
+  .superRefine((data, ctx) => {
+    if (data.identificationType === "CIN" && data.identificationFiles.length !== 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Veuillez fournir les deux côtés de votre CIN (recto et verso)",
+        path: ["identificationFiles"],
+      })
+    }
+    if (data.identificationType === "Passport" && data.identificationFiles.length !== 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Veuillez fournir une image de votre passeport",
+        path: ["identificationFiles"],
+      })
+    }
+  })
 
 const formSchema = z.object({
   numberOfGuests: z.string().min(1, { message: "Veuillez sélectionner le nombre d'invités" }),
   guests: z.array(guestSchema),
-  marriageCertificate: z.array(z.any()).optional(),
+  marriageCertificate: z.array(z.instanceof(File)).optional(),
   termsAccepted: z.enum(["accepted"], { required_error: "Vous devez accepter les conditions générales" }),
   signature: z.string().min(1, { message: "Veuillez fournir votre signature" }),
 })
 
-export function AirbnbMoroccoForm2() {
+export function AirbnbMoroccoForm() {
   const [requiresMarriageCertificate, setRequiresMarriageCertificate] = useState(false)
   const [signature, setSignature] = useState("")
   const [expandedGuests, setExpandedGuests] = useState<number[]>([])
@@ -144,38 +164,38 @@ export function AirbnbMoroccoForm2() {
         setCardHeight("auto")
         return prev.filter((i) => i !== index)
       } else {
-        const newExpanded = [index];
-        const numGuests = Number.parseInt(form.getValues("numberOfGuests"), 10);
-        const screenWidth = window.innerWidth;
-  
+        const newExpanded = [index]
+        const numGuests = Number.parseInt(form.getValues("numberOfGuests"), 10)
+        const screenWidth = window.innerWidth
+
         // Adjust card height based on screen width and number of guests
         if (screenWidth < 640) {
           if (numGuests <= 2) {
-            setCardHeight("150vh");
+            setCardHeight("150vh")
           } else if (numGuests <= 4) {
-            setCardHeight(index < 2 ? "150vh" : "160vh");
+            setCardHeight(index < 2 ? "150vh" : "160vh")
           } else if (numGuests <= 6) {
-            setCardHeight(index < 2 ? "150vh" : (index < 4 ? "160vh" : "180vh"));
+            setCardHeight(index < 2 ? "150vh" : index < 4 ? "160vh" : "180vh")
           }
         } else if (screenWidth >= 641 && screenWidth <= 1024) {
           if (numGuests <= 2) {
-            setCardHeight("140vh");
+            setCardHeight("140vh")
           } else if (numGuests <= 4) {
-            setCardHeight(index < 2 ? "140vh" : "150vh");
+            setCardHeight(index < 2 ? "140vh" : "150vh")
           } else if (numGuests <= 6) {
-            setCardHeight(index < 2 ? "140vh" : (index < 4 ? "150vh" : "160vh"));
+            setCardHeight(index < 2 ? "140vh" : index < 4 ? "150vh" : "160vh")
           }
         } else {
           if (numGuests <= 2) {
-            setCardHeight("165vh");
+            setCardHeight("165vh")
           } else if (numGuests <= 4) {
-            setCardHeight(index < 2 ? "165vh" : "180vh");
+            setCardHeight(index < 2 ? "165vh" : "180vh")
           } else if (numGuests <= 6) {
-            setCardHeight(index < 2 ? "165vh" : (index < 4 ? "180vh" : "195vh"));
+            setCardHeight(index < 2 ? "165vh" : index < 4 ? "180vh" : "195vh")
           }
         }
-  
-        return newExpanded;
+
+        return newExpanded
       }
     })
   }
@@ -185,7 +205,7 @@ export function AirbnbMoroccoForm2() {
   }
 
   return (
-    <div className="fixed inset-0 bg-transparent flex items-center justify-center sm:my-24 sm:mx-4">
+    <div className="fixed inset-0 bg-transparent flex items-center justify-center sm:my-16 sm:mx-4">
       <Card className="w-full max-w-5xl bg-white/30 backdrop-blur-md shadow-xl rounded-xl border border-white/20 overflow-hidden flex flex-col justify-between flex-grow">
         <CardContent className="p-6 max-h-[95vh] overflow-y-auto">
           <h1 className="text-2xl md:text-4xl font-bold mb-6 text-center text-white font-moroccan">
@@ -236,14 +256,37 @@ export function AirbnbMoroccoForm2() {
                             onClick={() => toggleGuestExpansion(index)}
                           >
                             <span>Invité {index + 1}</span>
-                            {expandedGuests.includes(index) ? (
-                              <ChevronUp className="h-4 w-4" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4" />
+                            <div className="flex items-center">
+                            {form.getValues(`guests.${index}.identificationFiles`)?.length > 0 && (
+                              <span 
+                                className={`mr-2 text-xs px-2 py-1 rounded-full ${
+                                  (form.getValues(`guests.${index}.identificationType`) === 'CIN' && 
+                                  form.getValues(`guests.${index}.identificationFiles`)?.length === 2) || 
+                                  (form.getValues(`guests.${index}.identificationType`) === 'Passport' && 
+                                  form.getValues(`guests.${index}.identificationFiles`)?.length === 1)
+                                    ? 'bg-green-500 text-white'
+                                    : 'bg-red-500 text-white'
+                                }`}
+                              >
+                                {form.getValues(`guests.${index}.identificationFiles`)?.length} fichier(s)
+                                {form.getValues(`guests.${index}.identificationType`) === 'CIN' && 
+                                form.getValues(`guests.${index}.identificationFiles`)?.length !== 2 && 
+                                ' (2 requis)'}
+                                {form.getValues(`guests.${index}.identificationType`) === 'Passport' && 
+                                form.getValues(`guests.${index}.identificationFiles`)?.length !== 1 && 
+                                ' (1 requis)'}
+                              </span>
                             )}
+
+                              {expandedGuests.includes(index) ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              )}
+                            </div>
                           </div>
                           {expandedGuests.includes(index) && (
-                            <Card className="absolute left-0 w-full mt-2 bg-violet-950 backdrop-blur-sm  shadow-md rounded-lg overflow-hidden z-10 border border-white/30 ">
+                            <Card className="absolute left-0 w-full mt-2 bg-violet-950 backdrop-blur-sm shadow-md rounded-lg overflow-hidden z-10 border border-white/30">
                               <CardContent className="p-2 sm:p-4 space-y-4">
                                 <FormField
                                   control={form.control}
@@ -281,8 +324,8 @@ export function AirbnbMoroccoForm2() {
                                             <FormLabel
                                               className={`flex items-center space-x-2 cursor-pointer text-white p-2 rounded-lg border ${
                                                 field.value === "male"
-                                                  ? "bg-purple-600 border-purple-600 text-white" // Selected style
-                                                  : "bg-white/50 border-gray-300" // Unselected style
+                                                  ? "bg-purple-600 border-purple-600 text-white"
+                                                  : "bg-white/50 border-gray-300"
                                               }`}
                                             >
                                               <User className="h-5 w-5" />
@@ -296,8 +339,8 @@ export function AirbnbMoroccoForm2() {
                                             <FormLabel
                                               className={`flex items-center space-x-2 cursor-pointer text-white p-2 rounded-lg border ${
                                                 field.value === "female"
-                                                  ? "bg-purple-600 border-purple-600 text-white" // Selected style
-                                                  : "bg-white/50 border-gray-300" // Unselected style
+                                                  ? "bg-purple-600 border-purple-600 text-white"
+                                                  : "bg-white/50 border-gray-300"
                                               }`}
                                             >
                                               <User2 className="h-5 w-5" />
@@ -423,30 +466,41 @@ export function AirbnbMoroccoForm2() {
                                     </FormItem>
                                   )}
                                 />
-                                  <FormField
-                                    control={form.control}
-                                    name={`guests.${index}.identificationFiles`}
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel className="text-white">
-                                          {form.getValues(`guests.${index}.identificationType`) === "CIN" ? "CIN (Recto/Verso)" : "Passeport"}
-                                        </FormLabel>
-                                        <FormControl>
-                                          <DropzoneComponent
-                                            onChange={(files) => field.onChange(files)}
-                                            maxFiles={form.getValues(`guests.${index}.identificationType`) === "CIN" ? 2 : 1}
-                                          />
-                                        </FormControl>
-                                        <FormDescription className="text-white/70">
-                                          {form.getValues(`guests.${index}.identificationType`) === "CIN"
-                                            ? "Veuillez télécharger une copie recto et verso de votre CIN."
-                                            : "Veuillez télécharger une copie de votre passeport."}
-                                          Taille maximale du fichier : 5 Mo par image.
-                                        </FormDescription>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
+                                <FormField
+                                  control={form.control}
+                                  name={`guests.${index}.identificationFiles`}
+                                  render={({ field: { onChange, value } }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-white">
+                                        {form.getValues(`guests.${index}.identificationType`) === "CIN"
+                                          ? "CIN (Recto/Verso)"
+                                          : "Passeport"}
+                                      </FormLabel>
+                                      <FormControl>
+                                        <SimpleDropzone
+                                          onChange={(files) => {
+                                            onChange(files)
+                                            form.trigger(`guests.${index}.identificationFiles`)
+                                          }}
+                                          maxFiles={
+                                            form.getValues(`guests.${index}.identificationType`) === "CIN" ? 2 : 1
+                                          }
+                                          acceptMultiple={
+                                            form.getValues(`guests.${index}.identificationType`) === "CIN"
+                                          }
+                                          value={value || []}
+                                        />
+                                      </FormControl>
+                                      <FormDescription className="text-white/70">
+                                        {form.getValues(`guests.${index}.identificationType`) === "CIN"
+                                          ? "Veuillez télécharger une copie recto et verso de votre CIN (2 images requises)."
+                                          : "Veuillez télécharger une copie de votre passeport (1 image requise)."}
+                                        Taille maximale du fichier : 5 Mo par image.
+                                      </FormDescription>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
                               </CardContent>
                             </Card>
                           )}
@@ -463,13 +517,13 @@ export function AirbnbMoroccoForm2() {
                 <FormField
                   control={form.control}
                   name="marriageCertificate"
-                  render={({ field }) => (
+                  render={({ field: { onChange, value } }) => (
                     <FormItem>
                       <FormLabel className="text-sm sm:text-md md:text-lg font-semibold text-white font-moroccan">
                         Certificat de mariage
                       </FormLabel>
                       <FormControl>
-                        <DropzoneComponent onChange={(files) => field.onChange(files)} />
+                        <SimpleDropzone onChange={onChange} maxFiles={1} acceptMultiple={false} value={value || []} />
                       </FormControl>
                       <FormDescription className="text-gray-300">
                         Comme il y a des invités masculins et féminins, dont une femme marocaine, veuillez télécharger
@@ -515,36 +569,38 @@ export function AirbnbMoroccoForm2() {
                 )}
               />
 
-                <div className={`flex flex-col transition-all duration-300 ${expandedGuests.length > 0 ? "mt-auto" : ""}`}>
-                    <FormField
-                      control={form.control}
-                      name="signature"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm sm:text-md md:text-lg font-semibold text-white">
-                            Signature
-                          </FormLabel>
-                          <FormControl>
-                            <SignatureCanvas
-                              onChange={(sig) => {
-                                setSignature(sig)
-                                field.onChange(sig)
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="flex justify-center items-center">
-                      <Button
-                        type="submit"
-                        className="sm:w-[60%] w-[40%] mt-4 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-purple-900 font-bold py-3 px-10 rounded-full shadow-lg transition"
-                      >
-                        Soumettre la Demande
-                      </Button>
-                    </div>
-                  </div>
+              <div
+                className={`flex flex-col transition-all duration-300 ${expandedGuests.length > 0 ? "mt-auto" : ""}`}
+              >
+                <FormField
+                  control={form.control}
+                  name="signature"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm sm:text-md md:text-lg font-semibold text-white">
+                        Signature
+                      </FormLabel>
+                      <FormControl>
+                        <SignatureCanvas
+                          onChange={(sig) => {
+                            setSignature(sig)
+                            field.onChange(sig)
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-center items-center">
+                  <Button
+                    type="submit"
+                    className="w-[40%] mt-4 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-purple-900 font-bold py-3 px-10 rounded-full shadow-lg transition"
+                  >
+                    Soumettre la Demande
+                  </Button>
+                </div>
+              </div>
             </form>
           </Form>
 

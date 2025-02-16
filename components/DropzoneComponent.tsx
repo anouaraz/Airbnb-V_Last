@@ -1,75 +1,110 @@
 "use client"
 
 import type React from "react"
-import { useEffect, useRef } from "react"
-import Dropzone from "dropzone"
-import "dropzone/dist/dropzone.css"
+import { useCallback } from "react"
+import { useDropzone } from "react-dropzone"
+import { X } from "lucide-react"
+import Image from "next/image"
 
-interface DropzoneComponentProps {
-  maxFiles?: number
+interface SimpleDropzoneProps {
   onChange?: (files: File[]) => void
+  maxFiles: number
+  acceptMultiple: boolean
+  value: File[]
 }
 
-const DropzoneComponent: React.FC<DropzoneComponentProps> = ({ maxFiles = 5, onChange }) => {
-  const dropzoneRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (dropzoneRef.current) {
-      const dropzone = new Dropzone(dropzoneRef.current, {
-        url: "/upload", // Change this to your upload endpoint
-        maxFiles: maxFiles,
-        maxFilesize: 2, // Maximum file size in MB
-        acceptedFiles: "image/*", // Accept only image files
-        dictDefaultMessage: "Glissez et déposez les fichiers ici ou cliquez pour télécharger",
-        previewTemplate: `
-          <div class="dz-preview dz-file-preview flex flex-col items-center p-4 rounded-lg transition-all duration-300 m-2">
-            <div class="dz-image relative" style="width: 100%; max-width: 300px; aspect-ratio: 3/2;">
-              <img data-dz-thumbnail class="w-full h-full object-cover rounded-lg shadow-lg" />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 transition-opacity duration-300 hover:opacity-100 rounded-lg"></div>
-            </div>
-            <div class="dz-details text-center mt-3 w-full">
-              <div class="dz-size text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full inline-block" data-dz-size></div>
-              <div class="dz-filename text-sm font-medium text-gray-700 mt-1 truncate max-w-[280px]"><span data-dz-name></span></div>
-            </div>
-            <button data-dz-remove class="mt-3 px-4 py-1 text-sm rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-purple-900 font-bold transition-all duration-300 transform hover:scale-105">
-              Supprimer
-            </button>
-          </div>`,
-        addRemoveLinks: false,
-      })
-
-      dropzone.on("success", (file) => {
-        console.log("File uploaded successfully:", file)
-        if (onChange) {
-          onChange(dropzone.files)
-        }
-      })
-
-      dropzone.on("removedfile", (file) => {
-        console.log("File removed:", file)
-        if (onChange) {
-          onChange(dropzone.files)
-        }
-      })
-
-      return () => {
-        dropzone.destroy()
+const SimpleDropzone: React.FC<SimpleDropzoneProps> = ({ onChange, maxFiles, acceptMultiple, value }) => {
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const newFiles = [...value, ...acceptedFiles].slice(0, maxFiles)
+      if (typeof onChange === "function") {
+        onChange(newFiles)
       }
+    },
+    [onChange, value, maxFiles],
+  )
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { "image/*": [] },
+    maxFiles: maxFiles - value.length,
+    multiple: acceptMultiple,
+  })
+
+  const removeFile = (fileToRemove: File) => {
+    const newFiles = value.filter((file) => file !== fileToRemove)
+    if (typeof onChange === "function") {
+      onChange(newFiles)
     }
-  }, [maxFiles, onChange])
+  }
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  }
+
+  const getGridCols = (fileCount: number) => {
+    if (fileCount === 1) return 'grid-cols-1'
+    if (fileCount === 2) return 'grid-cols-2'
+    if (fileCount === 3) return 'grid-cols-3'
+    return 'grid-cols-4'
+  }
 
   return (
     <div
-      ref={dropzoneRef}
-      className="dropzone border-2 border-dashed border-blue-300 p-8 rounded-lg text-center bg-gradient-to-br from-blue-100 to-purple-100 backdrop-blur-sm transition-all duration-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50"
+      {...getRootProps()}
+      className={`border-2 border-dashed rounded-lg p-6 cursor-pointer transition-colors ${
+        isDragActive ? "border-purple-500 bg-purple-50" : "border-gray-300 hover:border-purple-400"
+      }`}
     >
-      <div className="text-gray-600 font-medium text-sm md:text-lg">
-        Glissez et déposez les fichiers ici ou cliquez pour télécharger
+      <input {...getInputProps()} />
+      <div className="text-center mb-6">
+        {isDragActive ? (
+          <p className="text-purple-500">Déposez les fichiers ici ...</p>
+        ) : (
+          <p>Glissez et déposez des fichiers ici, ou cliquez pour sélectionner des fichiers</p>
+        )}
       </div>
-      <p className="text-sm text-gray-500 mt-2">Formats acceptés: JPG, PNG, GIF (max 5MB)</p>
+      
+      {value.length > 0 && (
+        <div className={`grid ${getGridCols(value.length)} gap-4 max-w-4xl mx-auto`}>
+          {value.map((file, index) => (
+            <div key={index} className="relative aspect-square w-full max-w-[200px] mx-auto group">
+              <div className="relative h-full w-full rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                <Image
+                  src={URL.createObjectURL(file) || "/placeholder.svg"}
+                  alt={`Preview ${index + 1}`}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-center p-3">
+                  <div className="text-white text-sm font-medium truncate">
+                    {file.name}
+                  </div>
+                  <div className="text-gray-300 text-xs text-center mt-2">
+                    {formatFileSize(file.size)}
+                  </div>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeFile(file);
+                  }}
+                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-700 transition-colors shadow-sm z-10"
+                  type="button"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
-export default DropzoneComponent
-
+export default SimpleDropzone
