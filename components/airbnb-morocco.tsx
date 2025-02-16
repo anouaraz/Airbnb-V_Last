@@ -361,56 +361,52 @@ export function AirbnbMoroccoForm() {
                                       <FormLabel className="text-white">Nationalité</FormLabel>
                                       <div className="relative">
                                         <FormControl>
-                                          <div className="flex items-center">
-                                            <Input
-                                              type="text"
-                                              placeholder="Rechercher une nationalité..."
-                                              className="bg-white/50 text-white border-gray-300 focus:ring-purple-400 w-full placeholder:text-gray-300"
-                                              value={field.value ? field.value : countrySearch}
-                                              onChange={(e) => {
-                                                setCountrySearch(e.target.value)
-                                                field.onChange(e.target.value)
-                                                setShowDropdown(true)
-                                                setSelectedCountry(null)
-                                              }}
-                                              ref={inputRef}
-                                              onFocus={() => setShowDropdown(true)}
-                                            />
-                                            {showDropdown && (
-                                              <button
-                                                className="bg-transparent border-none p-2 cursor-pointer absolute right-2 top-1/2 transform -translate-y-1/2"
-                                                onClick={(e) => {
-                                                  e.stopPropagation()
-                                                  setShowDropdown(false)
-                                                }}
-                                              >
-                                                <ChevronUp className="h-5 w-5 text-gray-800" />
-                                              </button>
-                                            )}
-                                          </div>
+                                          <Input
+                                            type="text"
+                                            placeholder="Rechercher une nationalité..."
+                                            className="bg-white/50 text-white border-gray-300 focus:ring-purple-400 w-full placeholder:text-gray-300"
+                                            value={countrySearch || field.value}
+                                            onChange={(e) => {
+                                              const searchValue = e.target.value
+                                              setCountrySearch(searchValue)
+                                              field.onChange(searchValue)
+                                              setShowDropdown(true)
+                                              
+                                              const filtered = countries.filter((country) => 
+                                                country.name.toLowerCase().includes(searchValue.toLowerCase())
+                                              )
+                                              setFilteredCountries(filtered)
+                                            }}
+                                            onFocus={() => setShowDropdown(true)}
+                                          />
                                         </FormControl>
-                                        {showDropdown && filteredCountries.length > 0 && (
-                                          <ul className="absolute top-full left-0 w-full z-10 bg-white text-gray-800 max-h-48 overflow-y-auto border border-gray-300 rounded-md mt-1">
+
+                                        {showDropdown && (countrySearch || field.value) && (
+                                          <ul className="absolute top-full left-0 w-full z-20 bg-violet-950 text-white max-h-48 overflow-y-auto border border-white/30 rounded-md mt-1 backdrop-blur-sm">
                                             {filteredCountries.map((country) => (
                                               <li
                                                 key={country.code}
-                                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
-                                                onClick={(e) => {
-                                                  e.stopPropagation()
-                                                  setCountrySearch("")
+                                                className="px-4 py-2 hover:bg-violet-900 cursor-pointer flex items-center"
+                                                onClick={() => {
                                                   field.onChange(country.name)
                                                   setSelectedCountry(country)
+                                                  setCountrySearch(country.name)
                                                   setShowDropdown(false)
                                                 }}
                                               >
                                                 <img
-                                                  src={country.flag || "/placeholder.svg"}
+                                                  src={country.flag}
                                                   alt={`${country.name} flag`}
-                                                  className="h-5 w-auto mr-2"
+                                                  className="h-4 w-6 object-cover mr-2"
                                                 />
                                                 <span>{country.name}</span>
                                               </li>
                                             ))}
+                                            {filteredCountries.length === 0 && (
+                                              <li className="px-4 py-2 text-gray-400">
+                                                Aucun pays trouvé
+                                              </li>
+                                            )}
                                           </ul>
                                         )}
                                       </div>
@@ -418,6 +414,7 @@ export function AirbnbMoroccoForm() {
                                     </FormItem>
                                   )}
                                 />
+
                                 <FormField
                                   control={form.control}
                                   name={`guests.${index}.identificationType`}
@@ -597,11 +594,12 @@ export function AirbnbMoroccoForm() {
                 <div className="flex justify-center items-center">
                   <Button
                     type="submit"
-                    className="w-[40%] mt-4 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-purple-900 font-bold py-3 px-10 rounded-full shadow-lg transition"
+                    className="w-full sm:w-[60%] md:w-[40%] mt-4 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-purple-900 text-sm sm:text-base font-bold py-2 sm:py-3 px-6 sm:px-10 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
                   >
                     Soumettre la Demande
                   </Button>
                 </div>
+
               </div>
             </form>
           </Form>
